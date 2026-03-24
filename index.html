@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#08111f" />
+  <title>NRL League Heroes Tracker v3</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">V3</div>
+        <div>
+          <h1>NRL League Heroes Tracker</h1>
+          <p>Version 3 · official 2026 checklist build</p>
+        </div>
+      </div>
+
+      <section class="summary-panel hero-summary">
+        <p class="eyebrow">Official set build</p>
+        <h2>2026 NRL League Heroes</h2>
+        <p class="subtle">Full checklist loaded, binder view added, and every card now has generated card art plus local team badge art.</p>
+      </section>
+
+      <section class="summary-panel">
+        <div class="stat-line">
+          <div>
+            <span class="stat-label">Owned</span>
+            <strong id="ownedCount">0</strong>
+          </div>
+          <div>
+            <span class="stat-label">Complete</span>
+            <strong id="percentComplete">0%</strong>
+          </div>
+        </div>
+        <div class="progress-track"><div id="progressFill"></div></div>
+        <div class="mini-grid">
+          <div class="mini-card"><span>Total</span><strong id="totalCount">0</strong></div>
+          <div class="mini-card"><span>Missing</span><strong id="missingCount">0</strong></div>
+          <div class="mini-card"><span>Dupes</span><strong id="duplicateCount">0</strong></div>
+          <div class="mini-card"><span>Wanted</span><strong id="wantedCount">0</strong></div>
+        </div>
+      </section>
+
+      <section class="summary-panel">
+        <h3>Tools</h3>
+        <button id="exportBtn" class="ghost-btn">Export collection JSON</button>
+        <label class="ghost-btn import-btn">
+          Import collection JSON
+          <input id="importInput" type="file" accept="application/json" hidden />
+        </label>
+        <button id="clearFiltersBtn" class="ghost-btn">Clear filters</button>
+        <button id="resetBtn" class="danger-btn">Reset saved collection</button>
+      </section>
+
+      <section class="summary-panel">
+        <h3>Filters</h3>
+        <input id="searchInput" type="search" placeholder="Search player, code, team, subset..." />
+        <select id="leagueFilter"></select>
+        <select id="subsetFilter"></select>
+        <select id="teamFilter"></select>
+        <select id="rarityFilter"></select>
+        <select id="statusFilter">
+          <option value="all">All status</option>
+          <option value="owned">Owned</option>
+          <option value="missing">Missing</option>
+          <option value="dupes">Duplicates</option>
+          <option value="wanted">Wanted</option>
+          <option value="trade">For trade</option>
+        </select>
+        <select id="sortFilter">
+          <option value="default">Sort: checklist order</option>
+          <option value="code">Sort: code</option>
+          <option value="name">Sort: title A–Z</option>
+          <option value="team">Sort: team A–Z</option>
+          <option value="updated">Sort: recently updated</option>
+        </select>
+      </section>
+
+      <section class="summary-panel note-panel">
+        <h3>Version 3 upgrades</h3>
+        <ul>
+          <li>Official 2026 checklist parsed into the app</li>
+          <li>Generated card-image style previews</li>
+          <li>Custom team badge art</li>
+          <li>Binder pages, team progress, subset progress</li>
+        </ul>
+      </section>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Pokellector-style tracker</p>
+          <h2 id="pageTitle">Collection Overview</h2>
+          <p class="subtle" id="visibleSummary">Loading cards…</p>
+        </div>
+        <div class="header-actions">
+          <span class="pill" id="subsetCountPill">0 subsets</span>
+          <span class="pill" id="teamCountPill">0 teams</span>
+        </div>
+      </header>
+
+      <nav class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="checklist">Checklist</button>
+        <button class="tab-btn" data-tab="binder">Binder</button>
+        <button class="tab-btn" data-tab="teams">Teams</button>
+        <button class="tab-btn" data-tab="trades">Trades</button>
+      </nav>
+
+      <section id="overviewTab" class="tab-panel active">
+        <section class="panel-grid triple">
+          <article class="feature-card feature-primary">
+            <p class="eyebrow">Set summary</p>
+            <h3 id="setSummaryTitle">2026 NRL League Heroes</h3>
+            <p id="setSummaryText" class="subtle">Loading…</p>
+          </article>
+          <article class="feature-card">
+            <p class="eyebrow">Checklist</p>
+            <h3 id="overviewChecklistCount">0</h3>
+            <p class="subtle">Cards in the official checklist loaded into v3.</p>
+          </article>
+          <article class="feature-card">
+            <p class="eyebrow">Recent activity</p>
+            <h3 id="overviewRecentCount">0</h3>
+            <p class="subtle">Cards touched recently in your collection.</p>
+          </article>
+        </section>
+
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Subset progress</h3>
+            <span class="pill" id="subsetVisiblePill">0 visible</span>
+          </div>
+          <div id="subsetProgressGrid" class="subset-grid"></div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Recent activity</h3>
+          </div>
+          <div id="recentActivity" class="activity-list"></div>
+        </section>
+      </section>
+
+      <section id="checklistTab" class="tab-panel">
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Checklist cards</h3>
+            <div class="pager">
+              <button id="checklistPrevBtn" class="ghost-inline">←</button>
+              <span id="checklistPageLabel">Page 1</span>
+              <button id="checklistNextBtn" class="ghost-inline">→</button>
+            </div>
+          </div>
+          <div id="checklistGrid" class="card-grid"></div>
+        </section>
+      </section>
+
+      <section id="binderTab" class="tab-panel">
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Binder view</h3>
+            <div class="pager">
+              <button id="binderPrevBtn" class="ghost-inline">←</button>
+              <span id="binderPageLabel">Page 1</span>
+              <button id="binderNextBtn" class="ghost-inline">→</button>
+            </div>
+          </div>
+          <div id="binderGrid" class="binder-grid"></div>
+        </section>
+      </section>
+
+      <section id="teamsTab" class="tab-panel">
+        <section class="section-block">
+          <div class="section-head">
+            <h3>Team progress</h3>
+          </div>
+          <div id="teamsGrid" class="team-grid"></div>
+        </section>
+      </section>
+
+      <section id="tradesTab" class="tab-panel">
+        <section class="panel-grid two">
+          <section class="section-block">
+            <div class="section-head">
+              <h3>Wishlist</h3>
+              <span class="pill" id="wishlistPill">0</span>
+            </div>
+            <div id="wishlistGrid" class="stack-grid"></div>
+          </section>
+          <section class="section-block">
+            <div class="section-head">
+              <h3>For trade</h3>
+              <span class="pill" id="tradePill">0</span>
+            </div>
+            <div id="tradeGrid" class="stack-grid"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="cardDialog">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow" id="dialogSubset"></p>
+          <h3 id="dialogTitle"></h3>
+          <p class="subtle" id="dialogTeamLine"></p>
+        </div>
+        <button id="closeDialogBtn" class="ghost-inline close-btn">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <div class="dialog-card-wrap">
+          <div id="dialogCardArt" class="card-art large-card-art"></div>
+          <div class="dialog-quick-actions">
+            <button id="quickAddBtn" class="primary-btn">+ Add copy</button>
+            <button id="quickRemoveBtn" class="ghost-btn">− Remove copy</button>
+          </div>
+        </div>
+
+        <div class="dialog-meta">
+          <div class="meta-grid">
+            <div><span class="meta-label">Code</span><strong id="dialogCode"></strong></div>
+            <div><span class="meta-label">Rarity</span><strong id="dialogRarity"></strong></div>
+            <div><span class="meta-label">League</span><strong id="dialogLeague"></strong></div>
+            <div><span class="meta-label">Type</span><strong id="dialogKind"></strong></div>
+          </div>
+
+          <div class="control-grid">
+            <label>
+              Copies owned
+              <input id="dialogCopies" type="number" min="0" max="99" />
+            </label>
+            <label class="toggle-row">
+              <span>Wanted</span>
+              <input id="dialogWanted" type="checkbox" />
+            </label>
+            <label class="toggle-row">
+              <span>For trade</span>
+              <input id="dialogTrade" type="checkbox" />
+            </label>
+            <label>
+              Notes
+              <textarea id="dialogNotes" rows="5" placeholder="Binder slot, condition, or trade note..."></textarea>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="data/cards-2026.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

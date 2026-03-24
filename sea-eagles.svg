@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 184" role="img" aria-label="SEA badge">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c2d4f"/>
+      <stop offset="100%" stop-color="#f1e5ee"/>
+    </linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.38)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,0.35)"/>
+    </filter>
+  </defs>
+  <path d="M80 6 144 28v58c0 46-27 73-64 92C43 159 16 132 16 86V28z" fill="url(#g)" filter="url(#shadow)"/>
+  <path d="M80 18 132 35v50c0 37-21 60-52 77-31-17-52-40-52-77V35z" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="4"/>
+  <circle cx="80" cy="74" r="36" fill="rgba(255,255,255,0.11)" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+  <text x="80" y="82" text-anchor="middle" font-size="26" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#fff">SEA</text>
+  <text x="80" y="134" text-anchor="middle" font-size="12" font-family="Arial, Helvetica, sans-serif" letter-spacing="2" fill="rgba(255,255,255,0.92)">LEAGUE HEROES</text>
+</svg>
